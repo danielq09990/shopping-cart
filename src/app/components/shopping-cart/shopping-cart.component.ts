@@ -16,6 +16,11 @@ export class ShoppingCartComponent implements OnInit {
   totalPrice: number = 0;
   totalItems: number = 0;
   isCartOpen: boolean = false;
+  showAddSuccess: boolean = false;
+  removingItems: Set<number> = new Set();
+  updatingQuantities: Set<number> = new Set();
+  updatingPrices: Set<number> = new Set();
+  updatingTotal: boolean = false;
 
   constructor(private cartService: CartService) {}
 
@@ -24,6 +29,11 @@ export class ShoppingCartComponent implements OnInit {
       this.cartItems = items;
       this.totalPrice = this.cartService.getTotalPrice();
       this.totalItems = this.cartService.getTotalItems();
+      
+      // Trigger badge bounce animation when items change
+      if (this.totalItems > 0) {
+        this.triggerBadgeBounce();
+      }
     });
   }
 
@@ -36,18 +46,77 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   removeFromCart(productId: number): void {
-    this.cartService.removeFromCart(productId);
+    // Add removing animation class
+    this.removingItems.add(productId);
+    
+    // Wait for animation to complete before removing
+    setTimeout(() => {
+      this.cartService.removeFromCart(productId);
+      this.removingItems.delete(productId);
+    }, 300);
   }
 
   updateQuantity(productId: number, quantity: number): void {
-    this.cartService.updateQuantity(productId, quantity);
+    if (quantity <= 0) {
+      this.removeFromCart(productId);
+    } else {
+      // Add updating animation classes
+      this.updatingQuantities.add(productId);
+      this.updatingPrices.add(productId);
+      this.updatingTotal = true;
+      
+      this.cartService.updateQuantity(productId, quantity);
+      
+      // Remove animation classes after animation completes
+      setTimeout(() => {
+        this.updatingQuantities.delete(productId);
+        this.updatingPrices.delete(productId);
+        this.updatingTotal = false;
+      }, 400);
+    }
   }
 
   clearCart(): void {
-    this.cartService.clearCart();
+    // Add removing animation for all items
+    this.cartItems.forEach(item => {
+      this.removingItems.add(item.product.id);
+    });
+    
+    setTimeout(() => {
+      this.cartService.clearCart();
+      this.removingItems.clear();
+    }, 300);
   }
 
   getItemTotal(item: CartItem): number {
     return item.product.price * item.quantity;
+  }
+
+  triggerBadgeBounce(): void {
+    // This will be handled by CSS animation when the badge appears
+  }
+
+  showAddToCartSuccess(): void {
+    this.showAddSuccess = true;
+    setTimeout(() => {
+      this.showAddSuccess = false;
+    }, 2000);
+  }
+
+  // Helper methods for CSS classes
+  isRemoving(productId: number): boolean {
+    return this.removingItems.has(productId);
+  }
+
+  isUpdatingQuantity(productId: number): boolean {
+    return this.updatingQuantities.has(productId);
+  }
+
+  isUpdatingPrice(productId: number): boolean {
+    return this.updatingPrices.has(productId);
+  }
+
+  isUpdatingTotal(): boolean {
+    return this.updatingTotal;
   }
 } 

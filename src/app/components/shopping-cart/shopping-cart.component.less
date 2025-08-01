@@ -38,6 +38,13 @@
       justify-content: center;
       font-size: 0.75rem;
       font-weight: bold;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      animation: badgePulse 0.6s ease-in-out;
+    }
+
+    // Badge bounce animation when items are added
+    .cart-badge.bounce {
+      animation: badgeBounce 0.6s ease-in-out;
     }
   }
 
@@ -45,6 +52,19 @@
     font-weight: 500;
     font-size: 0.9rem;
   }
+}
+
+// Badge animations
+@keyframes badgeBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .cart-overlay {
@@ -56,6 +76,12 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 1001;
   backdrop-filter: blur(2px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .cart-sidebar {
@@ -67,12 +93,13 @@
   background: white;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
   z-index: 1002;
-  transition: right 0.3s ease;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
 
   &.open {
     right: 0;
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .cart-header {
@@ -107,6 +134,7 @@
       &:hover {
         background: #f8f9fa;
         color: #333;
+        transform: scale(1.1);
       }
     }
   }
@@ -120,6 +148,7 @@
       text-align: center;
       padding: 3rem 1rem;
       color: #666;
+      animation: fadeInUp 0.5s ease-out;
 
       p {
         margin: 0.5rem 0;
@@ -136,12 +165,29 @@
         border-radius: 8px;
         margin-bottom: 1rem;
         position: relative;
+        animation: slideInFromLeft 0.4s ease-out;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        // Remove animation
+        &.removing {
+          animation: slideOutToRight 0.3s ease-in forwards;
+        }
 
         .item-image {
           flex: 0 0 80px;
           height: 80px;
           border-radius: 6px;
           overflow: hidden;
+          transition: transform 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+          }
 
           img {
             width: 100%;
@@ -186,11 +232,16 @@
               align-items: center;
               justify-content: center;
               font-weight: bold;
-              transition: all 0.2s;
+              transition: all 0.2s ease;
 
               &:hover:not(:disabled) {
                 background: #f8f9fa;
                 border-color: #007bff;
+                transform: scale(1.1);
+              }
+
+              &:active {
+                transform: scale(0.95);
               }
 
               &:disabled {
@@ -203,6 +254,11 @@
               min-width: 30px;
               text-align: center;
               font-weight: 600;
+              transition: all 0.2s ease;
+              
+              &.updating {
+                animation: quantityUpdate 0.3s ease-in-out;
+              }
             }
           }
 
@@ -211,6 +267,11 @@
             font-weight: 700;
             color: #28a745;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
+            
+            &.updating {
+              animation: priceUpdate 0.4s ease-in-out;
+            }
           }
         }
 
@@ -229,10 +290,15 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background-color 0.2s;
+          transition: all 0.2s ease;
 
           &:hover {
             background: #c82333;
+            transform: scale(1.2);
+          }
+
+          &:active {
+            transform: scale(0.9);
           }
         }
       }
@@ -243,6 +309,7 @@
     padding: 1.5rem;
     border-top: 1px solid #e9ecef;
     background: #f8f9fa;
+    animation: slideInUp 0.4s ease-out;
 
     .cart-total {
       display: flex;
@@ -255,6 +322,11 @@
         font-weight: 700;
         color: #28a745;
         font-size: 1.25rem;
+        transition: all 0.3s ease;
+        
+        &.updating {
+          animation: totalUpdate 0.5s ease-in-out;
+        }
       }
     }
 
@@ -269,7 +341,16 @@
         border-radius: 6px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
 
         &.clear-cart-btn {
           background: #6c757d;
@@ -290,6 +371,111 @@
         }
       }
     }
+  }
+}
+
+// Animation keyframes
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes quantityUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: #007bff; }
+  100% { transform: scale(1); }
+}
+
+@keyframes priceUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); color: #28a745; }
+  100% { transform: scale(1); }
+}
+
+@keyframes totalUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); color: #28a745; }
+  100% { transform: scale(1); }
+}
+
+// Success notification animation
+.add-to-cart-success {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #28a745;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  z-index: 2000;
+  animation: successSlideIn 0.5s ease-out, successSlideOut 0.5s ease-in 1.5s forwards;
+}
+
+@keyframes successSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes successSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
   }
 }
 

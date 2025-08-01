@@ -93,6 +93,15 @@ export class ProductListComponent implements OnInit {
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product);
+    
+    // Add visual feedback for successful addition
+    const button = event?.target as HTMLElement;
+    if (button) {
+      button.classList.add('success');
+      setTimeout(() => {
+        button.classList.remove('success');
+      }, 600);
+    }
   }
 
   clearFilters(): void {
@@ -102,5 +111,9 @@ export class ProductListComponent implements OnInit {
     this.searchKeyword = '';
     this.sortOrder = 'none';
     this.applyFilters();
+  }
+
+  trackByProductId(index: number, product: Product): number {
+    return product.id;
   }
 } 

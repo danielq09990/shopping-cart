@@ -1,5 +1,4 @@
 <div class="product-container">
-  <!-- Filter Panel -->
   <div class="filter-panel">
     <h3>Filters</h3>
     
@@ -64,34 +63,37 @@
     </button>
   </div>
 
-  <!-- Loading State - Centered in Product Area -->
-  <div class="loading-container" *ngIf="isLoading">
-    <div class="loading-spinner"></div>
-    <p>Loading products...</p>
-  </div>
-
-  <!-- Product Grid -->
-  <div class="product-grid" *ngIf="!isLoading">
-    <div class="results-info" *ngIf="filteredProducts.length > 0">
-      <p>Showing {{ filteredProducts.length }} of {{ products.length }} products</p>
-    </div>
-    <div class="product-card" *ngFor="let product of filteredProducts">
-      <div class="product-image">
-        <img [src]="product.image" [alt]="product.title">
-      </div>
-      <div class="product-info">
-        <h3 class="product-title">{{ product.title }}</h3>
-        <p class="product-category">{{ product.category }}</p>
-        <p class="product-price">${{ product.price.toFixed(2) }}</p>
-        <button class="add-to-cart-btn" (click)="addToCart(product)">
-          Add to Cart
-        </button>
-      </div>
+  <div *ngIf="isLoading; else contentTemplate">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading products...</p>
     </div>
   </div>
 
-  <!-- No Products Message -->
-  <div class="no-products" *ngIf="!isLoading && filteredProducts.length === 0">
-    <p>No products found matching your filters.</p>
-  </div>
+  <ng-template #contentTemplate>
+    <div class="product-grid" *ngIf="filteredProducts.length > 0; else noProductsTemplate">
+      <div class="results-info">
+        <p>Showing {{ filteredProducts.length }} of {{ products.length }} products</p>
+      </div>
+      <div class="product-card" *ngFor="let product of filteredProducts; trackBy: trackByProductId">
+        <div class="product-image">
+          <img [src]="product.image" [alt]="product.title" loading="lazy">
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">{{ product.title }}</h3>
+          <p class="product-category">{{ product.category }}</p>
+          <p class="product-price">${{ product.price.toFixed(2) }}</p>
+          <button class="add-to-cart-btn" (click)="addToCart(product)">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noProductsTemplate>
+      <div class="no-products">
+        <p>No products found matching your filters.</p>
+      </div>
+    </ng-template>
+  </ng-template>
 </div> 
