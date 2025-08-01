@@ -4,6 +4,26 @@
     <h3>Filters</h3>
     
     <div class="filter-section">
+      <label for="search">Search:</label>
+      <input 
+        type="text" 
+        id="search" 
+        [(ngModel)]="searchKeyword" 
+        placeholder="Search by title or category..."
+        (input)="onSearchChange()"
+      >
+    </div>
+
+    <div class="filter-section">
+      <label for="sort">Sort by Price:</label>
+      <select id="sort" [(ngModel)]="sortOrder" (change)="onSortChange()">
+        <option value="none">No Sorting</option>
+        <option value="asc">Price: Low to High</option>
+        <option value="desc">Price: High to Low</option>
+      </select>
+    </div>
+    
+    <div class="filter-section">
       <label for="category">Category:</label>
       <select id="category" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
         <option value="">All Categories</option>
@@ -44,8 +64,17 @@
     </button>
   </div>
 
+  <!-- Loading State - Centered in Product Area -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Loading products...</p>
+  </div>
+
   <!-- Product Grid -->
-  <div class="product-grid">
+  <div class="product-grid" *ngIf="!isLoading">
+    <div class="results-info" *ngIf="filteredProducts.length > 0">
+      <p>Showing {{ filteredProducts.length }} of {{ products.length }} products</p>
+    </div>
     <div class="product-card" *ngFor="let product of filteredProducts">
       <div class="product-image">
         <img [src]="product.image" [alt]="product.title">
@@ -62,7 +91,7 @@
   </div>
 
   <!-- No Products Message -->
-  <div class="no-products" *ngIf="filteredProducts.length === 0">
+  <div class="no-products" *ngIf="!isLoading && filteredProducts.length === 0">
     <p>No products found matching your filters.</p>
   </div>
 </div> 
